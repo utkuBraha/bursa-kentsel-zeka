@@ -38,6 +38,8 @@ Bağlantı metin olarak açılırsa **Bağlantıyı farklı kaydet** ile dosyay�
 
 Docker eksikse kurulum dosyası resmî Docker Desktop yükleyicisini indirip açar. İlk kurulum ekranlarını tamamlayın. Windows’ta WSL 2 kurulumu veya yeniden başlatma istenirse, işlemden sonra aynı dosyayı tekrar açın. [Windows için Docker Desktop](https://docs.docker.com/desktop/setup/install/windows-install/) · [macOS için Docker Desktop](https://docs.docker.com/desktop/setup/install/mac-install/)
 
+Başlatıcı 3016, 8000 veya 5433 portu başka bir uygulamada kullanılıyorsa sıradaki boş portu seçer ve `.env` dosyasına yazar. Kurulum sonunda uygulamanın açıldığı adres ekranda gösterilir. Docker Desktop’ta portları görmek için proje satırındaki oka basın. Uygulama adresi `frontend` satırındadır.
+
 Başlatıcı, OpenStreetMap Türkiye verisini indirip Bursa kesitini Docker içinde hazırlar. Harita, araç ağı analizi ve yatırım senaryoları aynı kurulumda açılır. Yol verisi ilk açılışta yüzlerce MB indirir ve hazırlanması bağlantı hızına göre zaman alır. Osmium ve OSRM için masaüstünde ek kurulum gerekmez. [Geofabrik veri kaynağı](https://download.geofabrik.de/europe/turkey.html)
 
 ## Fork sonrası kurulum
@@ -50,6 +52,8 @@ cd bursa-kentsel-zeka
 cp .env.example .env
 docker compose up --build -d --wait
 ```
+
+`port is already allocated` hatası alırsanız `.env` dosyasında `BURSA_APP_PORT`, `BURSA_API_PORT` veya `BURSA_DB_PORT` değerini boş bir portla değiştirip komutu tekrar çalıştırın. Uygulama adresi `BURSA_APP_PORT` ile birlikte değişir.
 
 İlk açılışta sınırlar ve sentetik envanter hazırlanır. Bu işlem birkaç dakika sürebilir. [Uygulamayı aç](http://127.0.0.1:3016/) · [Yerel API belgeleri](http://127.0.0.1:8000/docs)
 

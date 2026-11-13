@@ -7,7 +7,7 @@ services:
       POSTGRES_USER: ${POSTGRES_USER:-urban}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-urban_local_dev}
       POSTGRES_DB: ${POSTGRES_DB:-urban}
-    ports: ["127.0.0.1:5433:5432"]
+    ports: ["127.0.0.1:${BURSA_DB_PORT:-5433}:5432"]
     volumes: ["postgres_data:/var/lib/postgresql/data"]
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -U $$POSTGRES_USER -d $$POSTGRES_DB"]
@@ -20,7 +20,7 @@ services:
       dockerfile: backend/Dockerfile
     environment:
       DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-urban}:${POSTGRES_PASSWORD:-urban_local_dev}@db:5432/${POSTGRES_DB:-urban}
-    ports: ["127.0.0.1:8000:8000"]
+    ports: ["127.0.0.1:${BURSA_API_PORT:-8000}:8000"]
     depends_on:
       db: {condition: service_healthy}
     healthcheck:
@@ -35,7 +35,7 @@ services:
       dockerfile: frontend/Dockerfile
     environment:
       API_INTERNAL_URL: http://api:8000
-    ports: ["127.0.0.1:3016:3000"]
+    ports: ["127.0.0.1:${BURSA_APP_PORT:-3016}:3000"]
     depends_on:
       api: {condition: service_healthy}
 volumes:

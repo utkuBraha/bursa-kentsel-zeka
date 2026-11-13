@@ -60,8 +60,49 @@ docker compose version >/dev/null
 
 cd "$project"
 [[ -f .env ]] || cp .env.example .env
+compose=(docker compose -f docker-compose.yml -f compose.desktop.yml)
+
+# Free this project's own ports first, then pick a free host port for each service.
+"${compose[@]}" stop >/dev/null 2>&1 || true
+docker_ports="$(docker ps --format '{{.Ports}}')"
+port_busy() {
+  grep -Eq "(:|^)$1->" <<<"$docker_ports" && return 0
+  nc -z -G 1 127.0.0.1 "$1" >/dev/null 2>&1
+}
+env_port() {
+  grep -E "^$1=[0-9]+$" .env | tail -n 1 | cut -d= -f2 || true
+}
+choose_port() {
+  local port
+  port="$(env_port "$1")"
+  port="${port:-$2}"
+  for ((attempt=0; attempt<50; attempt++)); do
+    if ! port_busy "$port"; then
+      if [[ "$port" != "$(env_port "$1")" ]]; then
+        grep -v -E "^$1=" .env >.env.tmp || true
+        echo "$1=$port" >>.env.tmp
+        mv .env.tmp .env
+      fi
+      export "$1=$port"
+      return
+    fi
+    echo "Port $port kullanımda, sonraki port deneniyor..."
+    port=$((port + 1))
+  done
+  echo "$1 için boş port bulunamadı."
+  exit 1
+}
+choose_port BURSA_APP_PORT 3016
+choose_port BURSA_API_PORT 8000
+choose_port BURSA_DB_PORT 5433
+
 echo "Uygulama ve demo verisi hazırlanıyor. İlk açılış birkaç dakika sürebilir."
-docker compose -f docker-compose.yml -f compose.desktop.yml up --build -d --wait --wait-timeout 600
-curl --fail --silent --show-error http://127.0.0.1:8000/health/ready >/dev/null
-docker compose -f docker-compose.yml -f compose.desktop.yml exec -T api python -c "import json, urllib.request; result = json.load(urllib.request.urlopen('http://osrm:5000/nearest/v1/driving/28.9427163,40.2103735', timeout=15)); assert result['code'] == 'Ok' and result['waypoints']"
-open http://127.0.0.1:3016/
+if ! "${compose[@]}" up --build -d --wait --wait-timeout 600; then
+  "${compose[@]}" ps -a
+  "${compose[@]}" logs --tail 40 api frontend osrm
+  exit 1
+fi
+"${compose[@]}" exec -T api python -c "import urllib.request; urllib.request.urlopen('http://localhost:8000/health/ready', timeout=15)"
+"${compose[@]}" exec -T api python -c "import json, urllib.request; result = json.load(urllib.request.urlopen('http://osrm:5000/nearest/v1/driving/28.9427163,40.2103735', timeout=15)); assert result['code'] == 'Ok' and result['waypoints']"
+echo "Uygulama hazır: http://127.0.0.1:$BURSA_APP_PORT/"
+open "http://127.0.0.1:$BURSA_APP_PORT/"
