@@ -1,0 +1,35 @@
+{
+  "access_date": "2026-11-12",
+  "sources": [
+    {
+      "file": "data/raw/districts.json",
+      "sha256": "5f84ddb705758dc598b613f0ccce36a46327887e4223bffd94054007130dc7f4",
+      "feature_count": 17,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:EPSG::4326"
+        }
+      },
+      "invalid_geometry_count": 0,
+      "invalid_examples": [],
+      "nilüfer_neighborhood_count": null,
+      "status": "metadata_checked_geometry_import_pending"
+    },
+    {
+      "file": "data/raw/neighborhoods.json",
+      "sha256": "2dd939ac27db2758ec0b6c130b5516b0c4324f7a465323155e4a8e08abade353",
+      "feature_count": 1074,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:EPSG::2320"
+        }
+      },
+      "invalid_geometry_count": 0,
+      "invalid_examples": [],
+      "nilüfer_neighborhood_count": 70,
+      "status": "metadata_checked_geometry_import_pending"
+    }
+  ]
+}

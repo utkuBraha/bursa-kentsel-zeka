@@ -1,0 +1,14 @@
+{
+  "district_count": 17,
+  "neighborhood_count": 70,
+  "source_crs": 2320,
+  "storage_crs": 4326,
+  "area_crs": 32635,
+  "transform_operation": "Inverse of 3-degree Gauss-Kruger CM 30E + ED50 to WGS 84 (30) (with axis order normalized for visualization)",
+  "transform_accuracy_m": 2.0,
+  "outside_area_m2": 7965246.259929665,
+  "district_uncovered_m2": 7969470.930972715,
+  "neighborhood_overlap_m2": 0.20719879865646362,
+  "district_area_m2": 506501427.27623564,
+  "policy": "Declared CRS retained. No snapping, shifting or clipping. Not fit for unqualified cadastral use."
+}

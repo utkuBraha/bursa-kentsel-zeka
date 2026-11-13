@@ -1,0 +1,12 @@
+services:
+  osrm:
+    image: ghcr.io/project-osrm/osrm-backend@sha256:e1929ae2818226284d7ef007329098a30851c11528ab3712bc9c8d68da78278b
+    command: ["osrm-routed", "--algorithm", "mld", "/data/bursa.osrm"]
+    volumes:
+      - ./data/routing/city:/data:ro
+    ports:
+      - "127.0.0.1:5001:5000"
+  api:
+    environment:
+      OSRM_CAR_URL: http://osrm:5000
+      OSRM_TABLE_URL: http://osrm:5000
