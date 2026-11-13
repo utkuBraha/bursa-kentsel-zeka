@@ -74,7 +74,7 @@ env_port() {
 }
 choose_port() {
   local port
-  port="$(env_port "$1")"
+  port="${3:-$(env_port "$1")}"
   port="${port:-$2}"
   for ((attempt=0; attempt<50; attempt++)); do
     if ! port_busy "$port"; then
@@ -97,7 +97,25 @@ choose_port BURSA_API_PORT 8000
 choose_port BURSA_DB_PORT 5433
 
 echo "Uygulama ve demo verisi hazırlanıyor. İlk açılış birkaç dakika sürebilir."
-if ! "${compose[@]}" up --build -d --wait --wait-timeout 600; then
+# Docker can hold a port that no host tool shows; move to the next port and retry.
+log="$(mktemp)"
+started=0
+for ((try=0; try<5; try++)); do
+  if "${compose[@]}" up --build -d --wait --wait-timeout 600 2>&1 | tee "$log"; then
+    started=1
+    break
+  fi
+  busy="$(sed -nE 's/.*Bind for [^ ]*:([0-9]+) failed: port is already allocated.*/\1/p' "$log" | head -n 1)"
+  name=""
+  for candidate in BURSA_APP_PORT BURSA_API_PORT BURSA_DB_PORT; do
+    if [[ -n "$busy" && "${!candidate}" == "$busy" ]]; then name="$candidate"; fi
+  done
+  [[ -n "$name" ]] || break
+  echo "Port $busy Docker tarafından kullanılıyor, sonraki port deneniyor..."
+  choose_port "$name" "$busy" "$((busy + 1))"
+done
+rm -f "$log"
+if [[ $started != 1 ]]; then
   "${compose[@]}" ps -a
   "${compose[@]}" logs --tail 40 api frontend osrm
   exit 1

@@ -104,9 +104,9 @@ try {
         $line = Get-Content '.env' | Where-Object { $_ -match "^$name=\d+$" } | Select-Object -Last 1
         if ($line) { return [int]($line -split '=')[1] }
     }
-    function Select-Port([string]$name, [int]$default) {
+    function Select-Port([string]$name, [int]$default, [int]$start = 0) {
         $saved = Get-EnvPort $name
-        $port = if ($saved) { $saved } else { $default }
+        $port = if ($start) { $start } elseif ($saved) { $saved } else { $default }
         for ($attempt = 0; $attempt -lt 50; $attempt++) {
             if (!(Test-PortBusy $port)) {
                 if ($port -ne $saved) {
@@ -126,8 +126,22 @@ try {
     Select-Port 'BURSA_DB_PORT' 5433 | Out-Null
 
     Write-Host 'Uygulama ve demo verisi hazirlaniyor. Ilk acilis birkac dakika surebilir.'
-    & docker @composeArgs up --build -d --wait --wait-timeout 600
-    if ($LASTEXITCODE -ne 0) {
+    # Docker can hold a port that no host tool shows; move to the next port and retry.
+    $started = $false
+    for ($try = 0; $try -lt 5; $try++) {
+        $output = cmd.exe /d /c 'docker compose -f docker-compose.yml -f compose.desktop.yml up --build -d --wait --wait-timeout 600 2>&1'
+        $output | ForEach-Object { Write-Host $_ }
+        if ($LASTEXITCODE -eq 0) { $started = $true; break }
+        $match = [regex]::Match(($output -join "`n"), 'Bind for \S*:(\d+) failed: port is already allocated')
+        if (!$match.Success) { break }
+        $busy = [int]$match.Groups[1].Value
+        $name = @('BURSA_APP_PORT', 'BURSA_API_PORT', 'BURSA_DB_PORT') | Where-Object { (Get-Item "Env:$_").Value -eq "$busy" } | Select-Object -First 1
+        if (!$name) { break }
+        Write-Host "Port $busy Docker tarafindan kullaniliyor, sonraki port deneniyor..."
+        $port = Select-Port $name $busy ($busy + 1)
+        if ($name -eq 'BURSA_APP_PORT') { $appPort = $port }
+    }
+    if (!$started) {
         & docker @composeArgs ps -a
         & docker @composeArgs logs --tail 40 api frontend osrm
         throw 'Docker Compose uygulamayi baslatamadi.'
