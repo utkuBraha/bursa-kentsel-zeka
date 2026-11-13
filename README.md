@@ -38,7 +38,7 @@ Bağlantı metin olarak açılırsa **Bağlantıyı farklı kaydet** ile dosyay�
 
 Docker eksikse kurulum dosyası resmî Docker Desktop yükleyicisini indirip açar. İlk kurulum ekranlarını tamamlayın. Windows’ta WSL 2 kurulumu veya yeniden başlatma istenirse, işlemden sonra aynı dosyayı tekrar açın. [Windows için Docker Desktop](https://docs.docker.com/desktop/setup/install/windows-install/) · [macOS için Docker Desktop](https://docs.docker.com/desktop/setup/install/mac-install/)
 
-Bu kurulum haritayı, sentetik envanteri ve kuş uçuşu kapsama analizini hazırlar. Araç ağı üzerinden toplu hesap ve yatırım senaryoları için aşağıdaki yerel OSRM kurulumu gerekir.
+Başlatıcı, OpenStreetMap Türkiye verisini indirip Bursa kesitini Docker içinde hazırlar. Harita, araç ağı analizi ve yatırım senaryoları aynı kurulumda açılır. Yol verisi ilk açılışta yüzlerce MB indirir ve hazırlanması bağlantı hızına göre zaman alır. Osmium ve OSRM için masaüstünde ek kurulum gerekmez. [Geofabrik veri kaynağı](https://download.geofabrik.de/europe/turkey.html)
 
 ## Fork sonrası kurulum
 
@@ -53,7 +53,7 @@ docker compose up --build -d --wait
 
 İlk açılışta sınırlar ve sentetik envanter hazırlanır. Bu işlem birkaç dakika sürebilir. [Uygulamayı aç](http://127.0.0.1:3016/) · [Yerel API belgeleri](http://127.0.0.1:8000/docs)
 
-## Yol ağı ve yatırım senaryoları
+## Manuel yol ağı kurulumu
 
 Yerel OSRM kurulumu için `osmium` gerekir. [Geofabrik Türkiye verisini](https://download.geofabrik.de/europe/turkey.html) proje köküne `turkey-latest.osm.pbf` adıyla kaydedin ve komutları sırasıyla çalıştırın.
 

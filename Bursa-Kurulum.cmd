@@ -14,9 +14,9 @@ try {
     $base = Join-Path $env:LOCALAPPDATA 'Bursa Kentsel Zeka'
     $here = Split-Path $env:BURSA_INSTALLER
     $project = $here
-    if (!(Test-Path (Join-Path $here 'docker-compose.yml'))) {
-        $project = Join-Path $base 'bursa-kentsel-zeka-main'
-        if (!(Test-Path (Join-Path $project 'docker-compose.yml'))) {
+    if (!(Test-Path (Join-Path $here 'compose.desktop.yml'))) {
+        $project = Join-Path $base 'bursa-kentsel-zeka-osrm'
+        if (!(Test-Path (Join-Path $project 'compose.desktop.yml'))) {
             New-Item -ItemType Directory -Force -Path $base | Out-Null
             $temp = Join-Path $env:TEMP ('bursa-' + [guid]::NewGuid())
             New-Item -ItemType Directory -Path $temp | Out-Null
@@ -25,7 +25,11 @@ try {
                 $archive = Join-Path $temp 'project.zip'
                 Invoke-WebRequest -UseBasicParsing -Uri 'https://codeload.github.com/utkuBraha/bursa-kentsel-zeka/zip/refs/heads/main' -OutFile $archive
                 Expand-Archive -LiteralPath $archive -DestinationPath $temp
-                Move-Item -LiteralPath (Join-Path $temp 'bursa-kentsel-zeka-main') -Destination $project
+                $source = Join-Path $temp 'bursa-kentsel-zeka-main'
+                if (!(Test-Path (Join-Path $source 'compose.desktop.yml'))) {
+                    throw 'Indirilen arsiv arac agi kurulum dosyalarini icermiyor.'
+                }
+                Move-Item -LiteralPath $source -Destination $project
             } finally {
                 Remove-Item -LiteralPath $temp -Recurse -Force
             }
@@ -84,9 +88,11 @@ try {
     Set-Location -LiteralPath $project
     if (!(Test-Path '.env')) { Copy-Item '.env.example' '.env' }
     Write-Host 'Uygulama ve demo verisi hazirlaniyor. Ilk acilis birkac dakika surebilir.'
-    docker compose up --build -d --wait --wait-timeout 600
+    docker compose -f docker-compose.yml -f compose.desktop.yml up --build -d --wait --wait-timeout 600
     if ($LASTEXITCODE -ne 0) { throw 'Docker Compose uygulamayi baslatamadi.' }
     Invoke-WebRequest -UseBasicParsing -Uri 'http://127.0.0.1:8000/health/ready' | Out-Null
+    docker compose -f docker-compose.yml -f compose.desktop.yml exec -T api python -c "import json, urllib.request; result = json.load(urllib.request.urlopen('http://osrm:5000/nearest/v1/driving/28.9427163,40.2103735', timeout=15)); assert result['code'] == 'Ok' and result['waypoints']"
+    if ($LASTEXITCODE -ne 0) { throw 'Arac agi servisi dogrulanamadi.' }
     Start-Process 'http://127.0.0.1:3016/'
     exit 0
 } catch {

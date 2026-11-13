@@ -1,0 +1,12 @@
+services:
+  osrm:
+    build:
+      context: ./scripts/routing
+    command: ["osrm-routed", "--algorithm", "mld", "/data/bursa.osrm"]
+  api:
+    depends_on:
+      osrm:
+        condition: service_started
+    environment:
+      OSRM_CAR_URL: http://osrm:5000
+      OSRM_TABLE_URL: http://osrm:5000
