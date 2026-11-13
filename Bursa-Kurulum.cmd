@@ -132,9 +132,9 @@ try {
         $output = cmd.exe /d /c 'docker compose -f docker-compose.yml -f compose.desktop.yml up --build -d --wait --wait-timeout 600 2>&1'
         $output | ForEach-Object { Write-Host $_ }
         if ($LASTEXITCODE -eq 0) { $started = $true; break }
-        $match = [regex]::Match(($output -join "`n"), 'Bind for \S*:(\d+) failed: port is already allocated')
+        $match = [regex]::Match(($output -join "`n"), 'Bind for \S*:(\d+) failed: port is already allocated|exposing port TCP [^\s:]*:(\d+)')
         if (!$match.Success) { break }
-        $busy = [int]$match.Groups[1].Value
+        $busy = [int]($match.Groups[1].Value + $match.Groups[2].Value)
         $name = @('BURSA_APP_PORT', 'BURSA_API_PORT', 'BURSA_DB_PORT') | Where-Object { (Get-Item "Env:$_").Value -eq "$busy" } | Select-Object -First 1
         if (!$name) { break }
         Write-Host "Port $busy Docker tarafindan kullaniliyor, sonraki port deneniyor..."

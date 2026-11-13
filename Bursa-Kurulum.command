@@ -105,7 +105,7 @@ for ((try=0; try<5; try++)); do
     started=1
     break
   fi
-  busy="$(sed -nE 's/.*Bind for [^ ]*:([0-9]+) failed: port is already allocated.*/\1/p' "$log" | head -n 1)"
+  busy="$(sed -nE -e 's/.*Bind for [^ ]*:([0-9]+) failed: port is already allocated.*/\1/p' -e 's/.*exposing port TCP [^ :]*:([0-9]+).*/\1/p' "$log" | head -n 1)"
   name=""
   for candidate in BURSA_APP_PORT BURSA_API_PORT BURSA_DB_PORT; do
     if [[ -n "$busy" && "${!candidate}" == "$busy" ]]; then name="$candidate"; fi
