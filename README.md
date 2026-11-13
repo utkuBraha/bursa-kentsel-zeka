@@ -25,6 +25,21 @@ flowchart TD
 4. Kuş uçuşu kapsama halkaları ve OSRM araç ağı hesabı eklendi. Yatırım senaryoları, aday bir hizmet noktasının kapsanan hane ve nüfusa etkisini ölçtü.
 5. Nilüfer’de doğrulanan iş akışı Bursa’nın 17 ilçesine ve 1.074 mahalle analiz alanına genişletildi.
 
+## Masaüstünden kurulum
+
+İşletim sisteminize uygun dosyayı indirin ve açın. Dosya projeyi GitHub’dan indirir, Docker çalıştığında uygulamayı ve demo verisini hazırlar ve tarayıcıyı açar. İlk çalıştırma internet bağlantısı gerektirir ve birkaç dakika sürebilir.
+
+| Sistem | Kurulum dosyası |
+| --- | --- |
+| Windows | [Bursa-Kurulum.cmd](https://raw.githubusercontent.com/utkuBraha/bursa-kentsel-zeka/main/Bursa-Kurulum.cmd) |
+| macOS | [Bursa-Kurulum.command](https://raw.githubusercontent.com/utkuBraha/bursa-kentsel-zeka/main/Bursa-Kurulum.command) |
+
+Bağlantı metin olarak açılırsa **Bağlantıyı farklı kaydet** ile dosyayı indirin. macOS’ta dosya çalıştırma izniyle gelmediyse Terminal’de `chmod +x` yazıp bir boşluk bırakın, dosyayı Terminal’e sürükleyin ve Enter’a basın. Ardından dosyayı açın.
+
+Docker eksikse kurulum dosyası resmî Docker Desktop yükleyicisini indirip açar. İlk kurulum ekranlarını tamamlayın. Windows’ta WSL 2 kurulumu veya yeniden başlatma istenirse, işlemden sonra aynı dosyayı tekrar açın. [Windows için Docker Desktop](https://docs.docker.com/desktop/setup/install/windows-install/) · [macOS için Docker Desktop](https://docs.docker.com/desktop/setup/install/mac-install/)
+
+Bu kurulum haritayı, sentetik envanteri ve kuş uçuşu kapsama analizini hazırlar. Araç ağı üzerinden toplu hesap ve yatırım senaryoları için aşağıdaki yerel OSRM kurulumu gerekir.
+
 ## Fork sonrası kurulum
 
 Git ve Docker Compose gerekir. GitHub’da repoyu fork edin ve aşağıdaki ilk komutta `FORK_URL` yerine kendi fork’unuzun HTTPS klon adresini yazın.
