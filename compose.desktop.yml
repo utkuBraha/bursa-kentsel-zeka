@@ -1,3 +1,4 @@
+name: bursa-urban-desktop
 services:
   osrm:
     build:

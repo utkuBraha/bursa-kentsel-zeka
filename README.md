@@ -36,13 +36,7 @@ flowchart TD
 
 Bağlantı metin olarak açılırsa **Bağlantıyı farklı kaydet** ile dosyayı indirin.
 
-macOS’ta en kolay yol, Terminal’i açıp şu komutu yapıştırmaktır. Bu yolla dosya indirme, çalıştırma izni ve Apple uyarısı adımları gerekmez.
-
-```sh
-bash -c "$(curl -fsSL https://raw.githubusercontent.com/utkuBraha/bursa-kentsel-zeka/main/Bursa-Kurulum.command)"
-```
-
-İndirdiğiniz dosyayı açtığınızda Apple, dosyanın kötü amaçlı yazılım içermediğini doğrulayamadığını söyleyebilir. Dosya Apple imzası taşımadığı için bu uyarı çıkar. **Bitti**’ye basın, **Sistem Ayarları › Gizlilik ve Güvenlik** bölümünde aşağı inip **Yine de Aç**’a tıklayın ve dosyayı tekrar açın. Dosya çalıştırma izniyle gelmediyse Terminal’de `chmod +x` yazıp bir boşluk bırakın, dosyayı Terminal’e sürükleyin ve Enter’a basın.
+macOS’ta dosyayı indirdikten sonra Terminal’de `chmod +x` yazıp bir boşluk bırakın, dosyayı Terminal’e sürükleyin ve Enter’a basın. Ardından dosyayı açın. Kurulumun seçtiği adres terminalde görünür. Başlatıcı, varsayılan portlar doluysa boş port seçer.
 
 Docker eksikse kurulum dosyası resmî Docker Desktop yükleyicisini indirip açar. İlk kurulum ekranlarını tamamlayın. Windows’ta WSL 2 kurulumu veya yeniden başlatma istenirse, işlemden sonra aynı dosyayı tekrar açın. [Windows için Docker Desktop](https://docs.docker.com/desktop/setup/install/windows-install/) · [macOS için Docker Desktop](https://docs.docker.com/desktop/setup/install/mac-install/)
 

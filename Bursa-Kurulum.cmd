@@ -92,7 +92,15 @@ try {
     # Free this project's own ports first, then pick a free host port for each service.
     cmd.exe /d /c 'docker compose -f docker-compose.yml -f compose.desktop.yml stop >nul 2>&1'
     $dockerPorts = (docker ps --format '{{.Ports}}') -join "`n"
+    $excludedPorts = @(netsh interface ipv4 show excludedportrange protocol=tcp | ForEach-Object {
+        if ($_ -match '^\s*(\d+)\s+(\d+)\s*\*?\s*$') {
+            [pscustomobject]@{ First = [int]$Matches[1]; Last = [int]$Matches[2] }
+        }
+    })
     function Test-PortBusy([int]$port) {
+        foreach ($range in $excludedPorts) {
+            if ($port -ge $range.First -and $port -le $range.Last) { return $true }
+        }
         if ($dockerPorts -match "(:|^)$port->") { return $true }
         $client = New-Object System.Net.Sockets.TcpClient
         try {
